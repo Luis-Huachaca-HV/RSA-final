@@ -1,6 +1,8 @@
 #include <NTL/ZZ.h>
 #include <iostream>
-#include "librerias.h"
+#include "librerias.h"git 
+
+//hola soy angel
 
 using namespace std;
 using namespace NTL;
