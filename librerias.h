@@ -292,7 +292,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
     {
         do
         {
-            p = middleSquareNumber(get_semilla(),ZZ(2048));
+            p = middleSquareNumber(get_semilla(),ZZ(8));
 
             //p = rand()%100000;
             //p = rand();
@@ -300,7 +300,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
 
         do
         {
-            q = middleSquareNumber(get_semilla(),ZZ(2048));
+            q = middleSquareNumber(get_semilla(),ZZ(8));
             //q = rand()%100000;
             //q = rand();
         } while ( Miller(q,ZZ(10) )); //true = no sea primo     false = es primo
@@ -324,7 +324,7 @@ ZZ GK_searchE(ZZ fhi)
     ZZ e;
     do
     {
-        e = middleSquareNumber(get_semilla(),ZZ(2048));
+        e = middleSquareNumber(get_semilla(),ZZ(8));
         //e = rand()%1000;
         //e = rand();
     }while(euclides(e,fhi) != 1);
