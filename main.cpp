@@ -1,8 +1,6 @@
 #include <NTL/ZZ.h>
 #include <iostream>
-#include "librerias.h"git 
-
-//hola soy angel
+#include "librerias.h"
 
 using namespace std;
 using namespace NTL;
@@ -10,61 +8,96 @@ using namespace NTL;
 class RSA
 {
 private:
-    ZZ d;
+    ZZ d_R;
+    ZZ d_E;
     string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ,.-( )abcdefghijklmnopqrstuvwxyz<>*1234567890#";
 
 public:
-    ZZ n;
-    ZZ e;
+    ZZ n_R;
+    ZZ e_R;
+    ZZ e_E;
+    ZZ n_E;
     string mensaje;
     string mensaje_cifrado;
     string mensaje_decifrado;
 
-    RSA()
-    { }
+    RSA(){}
 
     RSA(ZZ _n, ZZ _e, string _mensaje)
     {
-        n = _n;
-        e = _e;
+        n_R = _n;
+        e_R = _e;
         mensaje = _mensaje;
-    }
 
+        //if(n == 0 && e == 0)
+
+    }
     void GenerateKeys()
-    {
-        ZZ p_0 = ZZ(0), q_0 = ZZ(0);
-        GK_searchPQ(p_0,q_0);
-        //p_0 = 17;
-        //q_0 = 43;
+        {
+             //Generacion de claves
+            ZZ p_0 = ZZ(0), q_0 = ZZ(0);
+            GK_searchPQ(p_0,q_0);
+            //p_0 = 17;
+            //q_0 = 43;
 
-        //int n;
-        n = GK_searchN(p_0,q_0);
+            //int n;
+            n_R = GK_searchN(p_0,q_0);
 
-        ZZ fhi = GK_searchfhi(p_0,q_0);
+            ZZ fhi = GK_searchfhi(p_0,q_0);
 
-        //int e;
-        //e = 101;
-        e = GK_searchE(fhi);
+            //int e;
+            //e = 101;
+            e_R = GK_searchE(fhi);
 
-        //int d;
-        d = inversa(e,fhi);
+            //int d;
+            d_R = inversa(e_R,fhi);
 
-        cout << "p: " << p_0 << endl;
-        cout << "q: " << q_0 << endl;
-        cout << "fhi: " << fhi << endl;
-        cout << "---------------------------------------------------------------" << endl;
-        cout << "clave publica e: " << e << endl;
-        cout << "clave privada d:" << d << endl;
-        cout << "n: " << n << endl;
-        cout << "---------------------------------------------------------------"  << endl;
-    }
+            cout << "p: " << p_0 << endl;
+            cout << "q: " << q_0 << endl;
+            cout << "fhi: " << fhi << endl;
+            cout << "---------------------------------------------------------------" << endl;
+            cout << "clave publica e: " << e_R << endl;
+            cout << "clave privada d:" << d_R << endl;
+            cout << "n: " << n_R << endl;
+            cout << "---------------------------------------------------------------"  << endl;
+        }
+
+    void FirmaDigital()
+        {
+             //Generacion de claves
+            ZZ p_F = ZZ(0), q_F = ZZ(0);
+            GK_searchPQ(p_F,q_F);
+            //p_0 = 17;
+            //q_0 = 43;
+
+            //int n;
+            n_E = GK_searchN(p_F,q_F);
+
+            ZZ fhi_F = GK_searchfhi(p_F,q_F);
+
+            //int e;
+            //e = 101;
+            e_E = GK_searchE(fhi_F);
+
+            //int d;
+            d_E = inversa(e_E,fhi_F);
+
+            cout << "p: " << p_F << endl;
+            cout << "q: " << q_F << endl;
+            cout << "fhi: " << fhi_F << endl;
+            cout << "---------------------------------------------------------------" << endl;
+            cout << "clave publica e: " << e_E << endl;
+            cout << "clave privada d:" << d_E << endl;
+            cout << "n: " << n_E << endl;
+            cout << "---------------------------------------------------------------"  << endl;
+        }
 
     string EmisorEncryption()
     {
         cout << "--------------------- DATOS -----------------------------------" << endl;
         cout << "Tu mensaje es: " << mensaje << endl;
-        cout << "clave publica e: " << e << endl;
-        cout << "n: " << n << endl;
+        cout << "clave publica e: " << e_R << endl;
+        cout << "n: " << n_R << endl;
         cout << "---------------------------------------------------------------" << endl;
 
         string s_fin_temp;
@@ -74,7 +107,7 @@ public:
             ZZ verificadorAddCaracteres = mensaje.length() * NumberOfDigitsZZ( ZZ(alfabeto.length()));
             cout << "Numero de caracteres que hay en el mensaje: " << verificadorAddCaracteres << endl;
 
-            if ( modulo(verificadorAddCaracteres, NumberOfDigitsZZ(n)-1) == 0 )
+            if ( modulo(verificadorAddCaracteres, NumberOfDigitsZZ(n_R)-1) == 0 )
             {
                 cout << "Tu mensaje esta correcto" << endl;
                 flag = false;
@@ -94,7 +127,7 @@ public:
         cout << "Mensaje transformado en numeros "  << s_fin_temp << endl;
         cout << " --------------------------------------------------------------" << endl;
 
-        ZZ i_fin_temp = NumberOfDigitsZZ(n)-1; //3
+        ZZ i_fin_temp = NumberOfDigitsZZ(n_R)-1; //3
         ZZ i_fin_temp2 = ZZ(s_fin_temp.length()) / i_fin_temp; //18/3 = 6
 
         for (int i = 0; i < i_fin_temp2; ++i) //es 6 = mensaje_num.length() / k
@@ -102,23 +135,23 @@ public:
             //string aux = ObtainMessageInNumbers(mensaje,alfabeto); //cambiar
             //cout << "Mensaje en numeros: " << aux << endl;
 
-            int k = NumberOfDigitsRint(n);
+            int k = NumberOfDigitsRint(n_R);
             //string s_num_of_matriz = SeparateIntoBlocks(i, k-1,aux); //021
             string s_num_of_matriz = SeparateIntoBlocks(i, k-1,s_fin_temp); //021
             cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
             ZZ i_num_of_matriz = String_To_ZZ(s_num_of_matriz); //convierto el numero a entero -> 21
 
 
-            cout << "formula: (" << i_num_of_matriz << ")^" << e << " mod " << n << endl;
+            cout << "formula: (" << i_num_of_matriz << ")^" << e_R << " mod " << n_R << endl;
             ZZ i_aux;
             //i_aux = ModularArithmetic(i_num_of_matriz,e,n); //Potenciacion modular con el numero -> 234
             //i_aux = binpow(i_num_of_matriz,e,n);
             //i_aux = powerZZ(i_num_of_matriz,e,n);
-            i_aux = k_ary(i_num_of_matriz,e,n);
+            i_aux = k_ary(i_num_of_matriz,e_R,n_R);
             cout << "Resultado de la exponeciacion: " << i_aux << endl;
 
             // ------------ hacer que sea de tamaño N ------------------
-            ZZ total_number_digits = NumberOfDigitsZZ(n); //4
+            ZZ total_number_digits = NumberOfDigitsZZ(n_R); //4
             //int aux_int = ZZ_to_int(i_aux);
             cout << "pos en entero: " << i_aux << endl;
             cout << "numero de digitos de n: " << total_number_digits << endl;
@@ -126,6 +159,21 @@ public:
             cout << "Mensaje cifrado es: " << mensaje_cifrado << endl;
             cout << endl;
         }
+
+        FirmaDigital();
+
+        cout << "----------------------Rubrica-----------------------------------" << endl;
+        // Rubrica:  r = (mensaje ^ clave privada del emisor) modulo clave publica N_a
+        ZZ r, S;
+        r = k_ary(String_To_ZZ(mensaje_cifrado), d_E, n_E);
+        cout << "formula: (" << mensaje_cifrado << ")^" << d_E << " mod " << n_E << endl;
+        //cout << "Rubrica: " << r << endl;
+
+        //Firma Digital: S = rubrica ^ clave publica e del receptor modulo N_b
+        cout << "----------------------Firma Digital-----------------------------------" << endl;
+        S = k_ary(r, e_R, n_R);
+        cout << "formula: (" << r << ")^" << e_R << " mod " << n_R << endl;
+        //cout << "Firma digital: " << S << endl;
 
         cout << "El mensaje cifrado final es: " << mensaje_cifrado << endl;
 
@@ -145,18 +193,18 @@ public:
         fhi  = GK_searchfhi(p,q);
 
         //private_key;
-        d = inversa(e,fhi);
+        d_R = inversa(e_R,fhi);
 
         cout << "--------------------- DATOS -----------------------------------" << endl;
         cout << "Tu mensaje es: " << mensaje << endl;
         cout << "p: " << p << endl;
         cout << "q: " << q << endl;
         cout << "fhi: " << fhi << endl;
-        cout << "private_key: " << d << endl;
-        cout << "n: " << n << endl;
+        cout << "private_key: " << d_R << endl;
+        cout << "n: " << n_R << endl;
         cout << "---------------------------------------------------------------" << endl;
 
-        ZZ i_fin_temp = NumberOfDigitsZZ(n); //4
+        ZZ i_fin_temp = NumberOfDigitsZZ(n_R); //4
         ZZ i_fin_temp2 = ZZ(mensaje.length()) / i_fin_temp; //6 bloques
 
         string mensaje_decifrado_num;
@@ -167,16 +215,16 @@ public:
 
             ZZ i_num_matriz = String_To_ZZ(s_num_matriz); //234
 
-            cout << "formula: (" << i_num_matriz << ")^" << d << " mod " << n << endl;
+            cout << "formula: (" << i_num_matriz << ")^" << d_R << " mod " << n_R << endl;
 
             ZZ i_aux;
             //i_aux = ModularArithmetic(i_num_matriz,d,n); //21
             //i_aux = binpow(i_num_matriz,d,n); //21
             //i_aux = powerZZ(i_num_matriz,d,n); //21
-            i_aux = k_ary(i_num_matriz,d,n); //21
+            i_aux = k_ary(i_num_matriz,d_R,n_R); //21
             //int i_aux2 = ZZ_to_int(i_aux);
 
-            ZZ total_number_digits = NumberOfDigitsZZ(n)-1; //3
+            ZZ total_number_digits = NumberOfDigitsZZ(n_R)-1; //3
             mensaje_decifrado_num = IncreaseZeros(i_aux,total_number_digits,mensaje_decifrado_num); //021412...
             cout << "Mensaje descifrado incompleto: " << mensaje_decifrado_num << endl;
         }
