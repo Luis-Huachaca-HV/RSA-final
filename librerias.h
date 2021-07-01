@@ -292,7 +292,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
     {
         do
         {
-            p = middleSquareNumber(get_semilla(),ZZ(8));
+            p = middleSquareNumber(get_semilla(),ZZ(512));
 
             //p = rand()%100000;
             //p = rand();
@@ -300,7 +300,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
 
         do
         {
-            q = middleSquareNumber(get_semilla(),ZZ(8));
+            q = middleSquareNumber(get_semilla(),ZZ(512));
             //q = rand()%100000;
             //q = rand();
         } while ( Miller(q,ZZ(10) )); //true = no sea primo     false = es primo
@@ -324,7 +324,7 @@ ZZ GK_searchE(ZZ fhi)
     ZZ e;
     do
     {
-        e = middleSquareNumber(get_semilla(),ZZ(8));
+        e = middleSquareNumber(get_semilla(),ZZ(512));
         //e = rand()%1000;
         //e = rand();
     }while(euclides(e,fhi) != 1);
@@ -411,7 +411,7 @@ string ObtainMessageInNumbers(string mensaje, string alfabeto)
 
 string SeparateIntoBlocks( int indice, int k, string mensaje_num) //0 - 3 - mensaje
 {
-    string matriz[3000];
+    string matriz[10000];
     int inicio = 0;
     for (int i = 0; i < (mensaje_num.length() / k); i++) // 0 - 6
     {

@@ -176,6 +176,7 @@ public:
         //cout << "Firma digital: " << S << endl;
 
         cout << "El mensaje cifrado final es: " << mensaje_cifrado << endl;
+        cout << "Fin del cifrado" << endl;
 
         return mensaje;
     }
@@ -237,7 +238,7 @@ public:
         for (int i = 0; i < i_fin_temp4; ++i) //es 9 = mensaje_num.length() / 2
         {
             string s_num_matriz = SeparateIntoBlocks(i, NumberOfDigits(alfabeto.length()),mensaje_decifrado_num); //02
-            cout << s_num_matriz << endl;
+            cout << "mensaje en indice " << s_num_matriz << endl;
 
             int i_num_matriz = atoi(s_num_matriz.c_str());
             string aux = ObtainMessageInLetters(i_num_matriz,alfabeto);
@@ -245,6 +246,7 @@ public:
         }
 
         cout << "El mensaje descifrado es: " << mensaje_decifrado << endl;
+        cout << "fin del descifrado";
 
         return mensaje;
     }
