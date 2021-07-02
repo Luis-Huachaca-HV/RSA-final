@@ -411,7 +411,7 @@ string ObtainMessageInNumbers(string mensaje, string alfabeto)
 
 string SeparateIntoBlocks( int indice, int k, string mensaje_num) //0 - 3 - mensaje
 {
-    string matriz[10000];
+    string matriz[3000];
     int inicio = 0;
     for (int i = 0; i < (mensaje_num.length() / k); i++) // 0 - 6
     {
@@ -439,6 +439,7 @@ string ObtainMessageInLetters( int pos, string alfabeto)
         }
     }
     return mensaje_num;
+<<<<<<< HEAD
 }
 
 string cypher(string mensaje_cifrado, ZZ e_R, ZZ n_R, string mensaje, string alfabeto){
@@ -622,3 +623,6 @@ string cypher_firma(string rubrica_r, ZZ e_R, ZZ n_R, string alfabeto){
     }
     return firma_digital;
 }
+=======
+}
+>>>>>>> 984b0c426e76aacdf73f95425d8c7fe9c7e8bc34

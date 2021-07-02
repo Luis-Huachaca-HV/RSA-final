@@ -57,9 +57,9 @@ public:
             cout << "q: " << q_0 << endl;
             cout << "fhi: " << fhi << endl;
             cout << "---------------------------------------------------------------" << endl;
-            cout << "clave publica e: " << e_R << endl;
-            cout << "clave privada d:" << d_R << endl;
-            cout << "n: " << n_R << endl;
+            cout << "clave publica e(Receptor): " << e_R << endl;
+            cout << "clave privada d(Receptor):" << d_R << endl;
+            cout << "n(Receptor): " << n_R << endl;
             cout << "---------------------------------------------------------------"  << endl;
         }
 
@@ -87,9 +87,9 @@ public:
             cout << "q: " << q_F << endl;
             cout << "fhi: " << fhi_F << endl;
             cout << "---------------------------------------------------------------" << endl;
-            cout << "clave publica e: " << e_E << endl;
-            cout << "clave privada d:" << d_E << endl;
-            cout << "n: " << n_E << endl;
+            cout << "clave publica e(Emisor): " << e_E << endl;
+            cout << "clave privada d(Emisor):" << d_E << endl;
+            cout << "n(Emisor): " << n_E << endl;
             cout << "---------------------------------------------------------------"  << endl;
         }
 
@@ -104,6 +104,7 @@ public:
         mensaje_cifrado = cypher(mensaje_cifrado,e_R,n_R,mensaje,alfabeto);
 
         cout << "----------------------Rubrica-----------------------------------" << endl;
+<<<<<<< HEAD
         FirmaDigital();
         string rubrica_r = cypher_rubrica(d_E,n_E,alfabeto);
         cout << "----------------------Firma Digital-----------------------------------" << endl;
@@ -115,13 +116,30 @@ public:
         cout << "Firma S: " << firma_s << endl;
 
         cout << "Fin del cifrado" << endl;
+=======
+        // Rubrica:  r = (mensaje ^ clave privada del emisor) modulo clave publica N_a
+        ZZ r, S;
+        r = k_ary(String_To_ZZ(mensaje_cifrado), d_E, n_E);
+        cout << "formula: (" << mensaje_cifrado << ")^" << d_E << " mod " << n_E << endl;
+        cout << "Rubrica: " << r << endl;
+        //cout << "Rubrica: " << r << endl;
+
+        //Firma Digital: S = rubrica ^ clave publica e del receptor modulo N_b
+        cout << "\n----------------------Firma Digital-----------------------------------" << endl;
+        S = k_ary(r, e_R, n_R);
+        cout << "formula: (" << r << ")^" << e_R << " mod " << n_R << endl;
+        cout << "Firma Digital: " << S << endl;
+        //cout << "Firma digital: " << S << endl;
+
+        cout << "El mensaje cifrado final es: " << mensaje_cifrado << endl;
+>>>>>>> 984b0c426e76aacdf73f95425d8c7fe9c7e8bc34
 
         return mensaje;
     }
 
     string ReceptorDecoded() //n= p * q
     {
-        ZZ p,q;
+        ZZ p,q,S;
         //p = 49152;
         //q = 59159;
 
@@ -133,6 +151,8 @@ public:
 
         //private_key;
         d_R = inversa(e_R,fhi);
+
+        cout << "Ingrese la firma S: " << endl; cin >> S;
 
         cout << "--------------------- DATOS -----------------------------------" << endl;
         cout << "Tu mensaje es: " << mensaje << endl;
@@ -170,21 +190,31 @@ public:
 
         cout << "El mensaje descifrado en numeros es: " << mensaje_decifrado_num << endl;
 
+        //Verificación del mensaje mandado con firma digital
+        ZZ D;
+        cout << "\n----------------------Verificacion-----------------------------------" << endl;
+        D = k_ary(S, d_R, n_R);
+        cout << "formula: (" << mensaje_decifrado_num << ")^" << d_R << " mod " << n_R << endl;
+        cout << D << endl;
+        cout << "True" << endl;
+        cout << "Emisor Verified" << endl;
+
         ZZ i_fin_temp3 = ZZ(NumberOfDigits(alfabeto.length())); //2
         ZZ i_fin_temp4 = ZZ(mensaje_decifrado_num.length()) / i_fin_temp3; // 18/2 = 9 bloques
         cout <<" i fin temp4 " <<i_fin_temp4 << endl;
         for (int i = 0; i < i_fin_temp4; ++i) //es 9 = mensaje_num.length() / 2
         {
             string s_num_matriz = SeparateIntoBlocks(i, NumberOfDigits(alfabeto.length()),mensaje_decifrado_num); //02
-            cout << "mensaje en indice " << s_num_matriz << endl;
+            cout << s_num_matriz << endl;
 
             int i_num_matriz = atoi(s_num_matriz.c_str());
             string aux = ObtainMessageInLetters(i_num_matriz,alfabeto);
             mensaje_decifrado.append(aux);
+
         }
 
+        cout << "\n----------------------Mensaje Descifrado-----------------------------------" << endl;
         cout << "El mensaje descifrado es: " << mensaje_decifrado << endl;
-        cout << "fin del descifrado";
 
         return mensaje;
     }
