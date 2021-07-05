@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 #include <chrono>
+//#include <NTL/vector.h>
 
 using std::vector;
 using std::cout;
@@ -292,7 +293,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
     {
         do
         {
-            p = middleSquareNumber(get_semilla(),ZZ(8));
+            p = middleSquareNumber(get_semilla(),ZZ(1024));
 
             //p = rand()%100000;
             //p = rand();
@@ -300,7 +301,7 @@ void GK_searchPQ(ZZ &p, ZZ &q)
 
         do
         {
-            q = middleSquareNumber(get_semilla(),ZZ(8));
+            q = middleSquareNumber(get_semilla(),ZZ(1024));
             //q = rand()%100000;
             //q = rand();
         } while ( Miller(q,ZZ(10) )); //true = no sea primo     false = es primo
@@ -324,7 +325,7 @@ ZZ GK_searchE(ZZ fhi)
     ZZ e;
     do
     {
-        e = middleSquareNumber(get_semilla(),ZZ(8));
+        e = middleSquareNumber(get_semilla(),ZZ(1024));
         //e = rand()%1000;
         //e = rand();
     }while(euclides(e,fhi) != 1);
@@ -385,8 +386,15 @@ string IncreaseZeros(ZZ pos, ZZ total_number_digits, string mensaje_num)
         contador++;
     }
     mensaje_num.append(num_alf);//14
-    cout << "funcion increaseZero: " << mensaje_num << endl ;
+    //cout << "funcion increaseZero: " << mensaje_num << endl ;
     return mensaje_num;
+    /*
+    pos = 13
+    total = 4
+    mensaje = "0013"
+    contador = 4
+    num_alf = "13"
+    */
 }
 
 
@@ -411,18 +419,19 @@ string ObtainMessageInNumbers(string mensaje, string alfabeto)
 
 string SeparateIntoBlocks( int indice, int k, string mensaje_num) //0 - 3 - mensaje
 {
-    string matriz[3000];
+    vector <string> matriz;
+    //string matriz[1000000];
     int inicio = 0;
     for (int i = 0; i < (mensaje_num.length() / k); i++) // 0 - 6
     {
-        matriz[i] = mensaje_num.substr(inicio,k);
+        matriz.push_back(mensaje_num.substr(inicio,k));
+        //matriz[i] = mensaje_num.substr(inicio,k);
         inicio = inicio + k; //0+3 = 3
     }
 
-    return matriz[indice];
+    //return matriz[indice];
+    return matriz.at(indice);
 }
-
-
 
 string ObtainMessageInLetters( int pos, string alfabeto)
 {
@@ -439,7 +448,6 @@ string ObtainMessageInLetters( int pos, string alfabeto)
         }
     }
     return mensaje_num;
-<<<<<<< HEAD
 }
 
 string cypher(string mensaje_cifrado, ZZ e_R, ZZ n_R, string mensaje, string alfabeto){
@@ -448,16 +456,16 @@ string cypher(string mensaje_cifrado, ZZ e_R, ZZ n_R, string mensaje, string alf
     do //para completar mas caracteres
     {
         ZZ verificadorAddCaracteres = mensaje.length() * NumberOfDigitsZZ( ZZ(alfabeto.length()));
-        cout << "Numero de caracteres que hay en el mensaje: " << verificadorAddCaracteres << endl;
+        //cout << "Numero de caracteres que hay en el mensaje: " << verificadorAddCaracteres << endl;
 
         if ( modulo(verificadorAddCaracteres, NumberOfDigitsZZ(n_R)-1) == 0 )
         {
-            cout << "Tu mensaje esta correcto" << endl;
+            //cout << "Tu mensaje esta correcto" << endl;
             flag = false;
         }
         else
         {
-            cout << "Aumentamos caracter #" << endl;
+            //cout << "Aumentamos caracter #" << endl;
             mensaje.append( "#" );
             flag = true;
         }
@@ -467,12 +475,13 @@ string cypher(string mensaje_cifrado, ZZ e_R, ZZ n_R, string mensaje, string alf
     cout << "Tu nuevo mensaje es: " << mensaje << endl;
     cout << " ----------------- Transformando a numeros --------------------" << endl;
     s_fin_temp = ObtainMessageInNumbers(mensaje,alfabeto); //mensaje en numeros completo
-    cout << "Mensaje transformado en numeros "  << s_fin_temp << endl;
+    //cout << "Mensaje transformado en numeros: "  << s_fin_temp << endl;
     cout << " --------------------------------------------------------------" << endl;
 
     ZZ i_fin_temp = NumberOfDigitsZZ(n_R)-1; //3
     ZZ i_fin_temp2 = ZZ(s_fin_temp.length()) / i_fin_temp; //18/3 = 6
 
+    //cout << "Cantidad de bloques: " << i_fin_temp2 << endl;
 
     for (int i = 0; i < i_fin_temp2; ++i) //es 6 = mensaje_num.length() / k
     {
@@ -481,73 +490,70 @@ string cypher(string mensaje_cifrado, ZZ e_R, ZZ n_R, string mensaje, string alf
         int k = NumberOfDigitsRint(n_R);
         //string s_num_of_matriz = SeparateIntoBlocks(i, k-1,aux); //021
         string s_num_of_matriz = SeparateIntoBlocks(i, k-1,s_fin_temp); //021
-        cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
+        //cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
         ZZ i_num_of_matriz = String_To_ZZ(s_num_of_matriz); //convierto el numero a entero -> 21
 
 
-        cout << "formula: (" << i_num_of_matriz << ")^" << e_R << " mod " << n_R << endl;
+        //cout << "formula: (" << i_num_of_matriz << ")^" << e_R << " mod " << n_R << endl;
         ZZ i_aux;
         //i_aux = ModularArithmetic(i_num_of_matriz,e,n); //Potenciacion modular con el numero -> 234
         //i_aux = binpow(i_num_of_matriz,e,n);
         //i_aux = powerZZ(i_num_of_matriz,e,n);
-        i_aux = k_ary(i_num_of_matriz,e_R,n_R);
-        cout << "Resultado de la exponeciacion: " << i_aux << endl;
+        i_aux = k_ary(i_num_of_matriz,e_R,n_R); //4567
+        //cout << "Resultado de la exponeciacion: " << i_aux << endl;
 
-        // ------------ hacer que sea de tamaño N ------------------
+        // ------------ hacer que sea de tama\F1o N ------------------
         ZZ total_number_digits = NumberOfDigitsZZ(n_R); //4
         //int aux_int = ZZ_to_int(i_aux);
-        cout << "pos en entero: " << i_aux << endl;
-        cout << "numero de digitos de n: " << total_number_digits << endl;
+        //cout << "pos en entero: " << i_aux << endl;
+        //cout << "numero de digitos de n: " << total_number_digits << endl;
         mensaje_cifrado = IncreaseZeros(i_aux, total_number_digits,mensaje_cifrado);
-        cout << "Mensaje cifrado es: " << mensaje_cifrado << endl;
-        cout << endl;
+        //cout << "Mensaje cifrado es: " << mensaje_cifrado << endl; //00134567
+        //cout << endl;
     }
     return mensaje_cifrado;
 }
 
-string cypher_rubrica(ZZ d_E, ZZ n_E, string alfabeto){
-    //string datos = "Luis Huachaca 201-10-47642 73468914 Chofer Senna 201-10-42642 23468914 Fabricio Paratichi 221-10-47642 73468932 Ana Lisa 204-10-47642 73468214 Angela Lozano 201-10-57642 73168914";
-    string datos = "Ana Lisa 204-10-47642 73468214 Angela Lozano 201-10-57642 73168914";
-    cout << " longitud de datos:  "<< datos.length() << endl;
+string cypher_rubrica(ZZ d_E, ZZ n_E, string alfabeto)
+{
+    string datos = "Ana Concha 204 10 47642 73468214 Angel Loayza 201 10 57642 73168914 Ayrton Chavez 201 10 42642 23468914 Fabrizio Righetti 221 10 47642 73468932 Luis Huachaca 221 10 47642 73468932 Ana Concha 204 10 47642 73468214 Angel Loayza 201 10 57642 73168914 Ayrton Chavez 201 10 42642 23468914 Fabrizio Righetti 221 10 47642 73468932 Luis Huachaca 221 10 47642 73468932";
+    //cout << " longitud de datos:  "<< datos.length() << endl;
     //sumar "#" a la rubrica
     bool flag2;
     do //para completar mas caracteres
     {
         ZZ verificadorAddCaracteres = datos.length() * NumberOfDigitsZZ( ZZ(alfabeto.length()));
-        cout << "Numero de caracteres que hay en el datos: " << verificadorAddCaracteres << endl;
+        //cout << "Numero de caracteres que hay en el datos: " << verificadorAddCaracteres << endl;
 
-        if ( modulo(verificadorAddCaracteres, NumberOfDigitsZZ(n_E)-1) == 0 )//se le quita la resta a len N -1, porque en firma digital no lo especifica o no
+        if ( modulo(verificadorAddCaracteres, NumberOfDigitsZZ(n_E)-ZZ(1)) == ZZ(0) )//se le quita la resta a len N -1, porque en firma digital no lo especifica o no
         {
-            cout << "Tu mensaje esta correcto" << endl;
+            //cout << "Tu mensaje esta correcto" << endl;
             flag2 = false;
         }
         else
         {
-            cout << "Aumentamos caracter #" << endl;
+            //cout << "Aumentamos caracter #" << endl;
             datos.append( "#" );
             flag2 = true;
         }
     } while (flag2);
 
-
-
-
     string datos_fin_temp;
 
-    cout << "--------------------- DATOS -----------------------------------" << endl;
+    cout << "-------------------- Nuevo mensaje ----------------------------" << endl;
     cout << "Tu nuevo mensaje es: " << datos << endl;
     cout << " ----------------- Transformando a numeros --------------------" << endl;
     datos_fin_temp = ObtainMessageInNumbers(datos,alfabeto); //mensaje en numeros completo
-    cout << "Mensaje transformado en numeros "  << datos_fin_temp << endl;
-    cout << " --------------------------------------------------------------" << endl;
+    //cout << datos_fin_temp << endl;
 
-    cout << "----------------------Rubrica-----------------------------------" << endl;
+    cout << "---------------------------------------------------------------" << endl;
     // Rubrica:  r = (mensaje ^ clave privada del emisor) modulo clave publica N_a
     string rubrica_r;
 
-    ZZ rubrica_temp = NumberOfDigitsZZ(n_E)-1; //3
+    ZZ rubrica_temp = NumberOfDigitsZZ(n_E) - ZZ(1); //3
     ZZ rubrica_temp2 = ZZ(datos_fin_temp.length()) / rubrica_temp; //18/3 = 6
-    cout << "rubrica_tem: " << rubrica_temp << " rubrica_temp2: " << rubrica_temp2 << endl;
+    // cout << "rubrica_tem: " << rubrica_temp << " rubrica_temp2: " << rubrica_temp2 << endl;
+    //cout << "dentro" << endl;
     for (int i = 0; i < rubrica_temp2; ++i) //es 6 = mensaje_num.length() / k
     {
         //string aux = ObtainMessageInNumbers(mensaje,alfabeto); //cambiar
@@ -555,34 +561,36 @@ string cypher_rubrica(ZZ d_E, ZZ n_E, string alfabeto){
         int k = NumberOfDigitsRint(n_E);
         //string s_num_of_matriz = SeparateIntoBlocks(i, k-1,aux); //021
         string s_num_of_matriz = SeparateIntoBlocks(i, k-1,datos_fin_temp); //021
-        cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
+        //cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
         ZZ i_num_of_matriz = String_To_ZZ(s_num_of_matriz); //convierto el numero a entero -> 21
 
 
-        cout << "formula: (" << i_num_of_matriz << ")^" << d_E << " mod " << n_E << endl;
+        //cout << "formula: (" << i_num_of_matriz << ")^" << d_E << " mod " << n_E << endl;
         ZZ i_aux;
         //i_aux = ModularArithmetic(i_num_of_matriz,e,n); //Potenciacion modular con el numero -> 234
         //i_aux = binpow(i_num_of_matriz,e,n);
         //i_aux = powerZZ(i_num_of_matriz,e,n);
         i_aux = k_ary(i_num_of_matriz,d_E,n_E);
-        cout << "Resultado de la exponeciacion: " << i_aux << endl;
+        //cout << "Resultado de la exponeciacion: " << i_aux << endl;
 
-        // ------------ hacer que sea de tamaño N ------------------
+        // ------------ hacer que sea de tama\F1o N ------------------
         ZZ total_number_digits = NumberOfDigitsZZ(n_E); //4
         //int aux_int = ZZ_to_int(i_aux);
-        cout << "pos en entero: " << i_aux << endl;
-        cout << "numero de digitos de n: " << total_number_digits << endl;
+        //cout << "pos en entero: " << i_aux << endl;
+        //cout << "numero de digitos de n: " << total_number_digits << endl;
         rubrica_r = IncreaseZeros(i_aux, total_number_digits,rubrica_r);
-        cout << "Mensaje cifrado es: " << rubrica_r << endl;
-        cout << endl;
+        //cout << "Mensaje cifrado es: " << rubrica_r << endl;
+        //cout << endl;
     }
+    //cout << "Mensaje rubrica r es: " << rubrica_r << endl;
     return rubrica_r;
 }
+
 string cypher_firma(string rubrica_r, ZZ e_R, ZZ n_R, string alfabeto){
     //string s_fin_temp;
 
-    cout << "--------------------- DATOS -----------------------------------" << endl;
-    cout << "Tu nuevo rubrica_r es: " << rubrica_r  << endl;
+    cout << "---------------------------------------------------------------" << endl;
+    cout << "La rubrica ingresada es: " << rubrica_r  << endl;
     cout << " ----------------- Transformando a numeros --------------------" << endl;
     //s_fin_temp = ObtainMessageInNumbers(mensaje,alfabeto); //mensaje en numeros completo
     //cout << "Mensaje transformado en numeros "  << s_fin_temp << endl;
@@ -599,30 +607,158 @@ string cypher_firma(string rubrica_r, ZZ e_R, ZZ n_R, string alfabeto){
         int k = NumberOfDigitsRint(n_R);
         //string s_num_of_matriz = SeparateIntoBlocks(i, k-1,aux); //021
         string s_num_of_matriz = SeparateIntoBlocks(i, k-1,rubrica_r); //021
-        cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
+        //cout << "Mensaje separado en bloques: " << s_num_of_matriz << endl;
         ZZ i_num_of_matriz = String_To_ZZ(s_num_of_matriz); //convierto el numero a entero -> 21
 
-
-        cout << "formula: (" << i_num_of_matriz << ")^" << e_R << " mod " << n_R << endl;
+        //cout << "formula: (" << i_num_of_matriz << ")^" << e_R << " mod " << n_R << endl;
         ZZ i_aux;
         //i_aux = ModularArithmetic(i_num_of_matriz,e,n); //Potenciacion modular con el numero -> 234
         //i_aux = binpow(i_num_of_matriz,e,n);
         //i_aux = powerZZ(i_num_of_matriz,e,n);
         i_aux = k_ary(i_num_of_matriz,e_R,n_R);
-        cout << "Resultado de la exponeciacion: " << i_aux << endl;
+        //cout << "Resultado de la exponeciacion: " << i_aux << endl;
 
 
-        // ------------ hacer que sea de tamaño N ------------------
+        // ------------ hacer que sea de tama\F1o N ------------------
         ZZ total_number_digits = NumberOfDigitsZZ(n_R); //4
         //int aux_int = ZZ_to_int(i_aux);
-        cout << "pos en entero: " << i_aux << endl;
-        cout << "numero de digitos de n: " << total_number_digits << endl;
+        //cout << "pos en entero: " << i_aux << endl;
+        //cout << "numero de digitos de n: " << total_number_digits << endl;
         firma_digital = IncreaseZeros(i_aux, total_number_digits,firma_digital);
-        cout << "firma_digital es: " << firma_digital << endl;
-        cout << endl;
+        //cout << "firma_digital es: " << firma_digital << endl;
+        //cout << endl;
     }
     return firma_digital;
 }
-=======
+
+string decypher(string mensaje,string mensaje_decifrado, ZZ n_R, ZZ d_R, string alfabeto){
+    ZZ i_fin_temp = NumberOfDigitsZZ(n_R); //4
+    ZZ i_fin_temp2 = ZZ(mensaje.length()) / i_fin_temp; //6 bloques
+
+    string mensaje_decifrado_num;
+    for (int i = 0; i < i_fin_temp2; ++i) //es 6 = mensaje_num.length() / k
+    {
+        //string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(NumberOfDigitsZZ(n)) ,mensaje); //0234
+        string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(i_fin_temp) ,mensaje); //0234
+
+        ZZ i_num_matriz = String_To_ZZ(s_num_matriz); //234
+
+        //cout << "formula: (" << i_num_matriz << ")^" << d_R << " mod " << n_R << endl;
+
+        ZZ i_aux;
+        //i_aux = ModularArithmetic(i_num_matriz,d,n); //21
+        //i_aux = binpow(i_num_matriz,d,n); //21
+        //i_aux = powerZZ(i_num_matriz,d,n); //21
+        i_aux = k_ary(i_num_matriz,d_R,n_R); //21
+        //int i_aux2 = ZZ_to_int(i_aux);
+
+        ZZ total_number_digits = NumberOfDigitsZZ(n_R)-1; //3
+        mensaje_decifrado_num = IncreaseZeros(i_aux,total_number_digits,mensaje_decifrado_num); //021412...
+        //cout << "Mensaje descifrado incompleto: " << mensaje_decifrado_num << endl;
+    }
+
+    //cout << "El mensaje descifrado en numeros es: " << mensaje_decifrado_num << endl;
+
+    ZZ i_fin_temp3 = ZZ(NumberOfDigits(alfabeto.length())); //2
+    ZZ i_fin_temp4 = ZZ(mensaje_decifrado_num.length()) / i_fin_temp3; // 18/2 = 9 bloques
+    //cout <<" i fin temp4 " <<i_fin_temp4 << endl;
+    for (int i = 0; i < i_fin_temp4; ++i) //es 9 = mensaje_num.length() / 2
+    {
+        string s_num_matriz = SeparateIntoBlocks(i, NumberOfDigits(alfabeto.length()),mensaje_decifrado_num); //02
+        //cout << "mensaje en indice " << s_num_matriz << endl;
+
+        int i_num_matriz = atoi(s_num_matriz.c_str());
+        string aux = ObtainMessageInLetters(i_num_matriz,alfabeto);
+        mensaje_decifrado.append(aux);
+    }
+
+    //cout << "El mensaje descifrado es: " << mensaje_decifrado << endl;
+    //cout << "fin del descifrado" << endl;
+
+    return mensaje_decifrado;
 }
->>>>>>> 984b0c426e76aacdf73f95425d8c7fe9c7e8bc34
+
+string decypher_firma(ZZ d_R, ZZ n_R, string firma ){
+    ZZ i_fin_temp = NumberOfDigitsZZ(n_R); //4
+    ZZ i_fin_temp2 = ZZ(firma.length()) / i_fin_temp; //6 bloques
+
+    string mensaje_decifrado_num;
+    for (int i = 0; i < i_fin_temp2; ++i) //es 6 = mensaje_num.length() / k
+    {
+        //string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(NumberOfDigitsZZ(n)) ,mensaje); //0234
+        string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(i_fin_temp) , firma); //0234
+
+        ZZ i_num_matriz = String_To_ZZ(s_num_matriz); //234
+
+        //cout << "formula: (" << i_num_matriz << ")^" << d_R << " mod " << n_R << endl;
+
+        ZZ i_aux;
+        //i_aux = ModularArithmetic(i_num_matriz,d,n); //21
+        //i_aux = binpow(i_num_matriz,d,n); //21
+        //i_aux = powerZZ(i_num_matriz,d,n); //21
+        i_aux = k_ary(i_num_matriz,d_R,n_R); //21
+        //int i_aux2 = ZZ_to_int(i_aux);
+
+        ZZ total_number_digits = NumberOfDigitsZZ(n_R)-1; //3
+        mensaje_decifrado_num = IncreaseZeros(i_aux,total_number_digits,mensaje_decifrado_num); //021412...
+        //cout << "Mensaje descifrado incompleto: " << mensaje_decifrado_num << endl;
+    }
+
+    //cout << "El mensaje descifrado en numeros es: " << mensaje_decifrado_num << endl;
+
+
+
+    //cout << "El mensaje descifrado de firma es(falta rubrica): " << mensaje_decifrado_num << endl;
+    //cout << "fin del descifrado";
+
+    return mensaje_decifrado_num;
+}
+
+string decypher_rubrica(string mensaje_decifrado,string mensaje_decifrado_num, ZZ e_E, ZZ n_E, string alfabeto){
+    ZZ i_fin_temp = NumberOfDigitsZZ(n_E); //4
+    ZZ i_fin_temp2 = ZZ(mensaje_decifrado_num.length()) / i_fin_temp; //6 bloques
+    //cout << "antes de entrar al for" << endl;
+    //string mensaje_decifrado_num;
+    string mensaje_ceros;
+    for (int i = 0; i < i_fin_temp2; ++i) //es 6 = mensaje_num.length() / k
+    {
+        //cout << "dentro del for" << endl;
+        //string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(NumberOfDigitsZZ(n)) ,mensaje); //0234
+        string s_num_matriz = SeparateIntoBlocks(i, ZZ_to_int(i_fin_temp) ,mensaje_decifrado_num); //0234
+
+        ZZ i_num_matriz = String_To_ZZ(s_num_matriz); //234
+
+        //cout << "formula: (" << i_num_matriz << ")^" << e_E << " mod " << n_E << endl;
+
+        ZZ i_aux;
+        //i_aux = ModularArithmetic(i_num_matriz,d,n); //21
+        //i_aux = binpow(i_num_matriz,d,n); //21
+        //i_aux = powerZZ(i_num_matriz,d,n); //21
+        i_aux = k_ary(i_num_matriz,e_E,n_E); //21
+        //int i_aux2 = ZZ_to_int(i_aux);
+
+        ZZ total_number_digits = NumberOfDigitsZZ(n_E)-1; //3
+        mensaje_ceros = IncreaseZeros(i_aux,total_number_digits,mensaje_ceros); //021412...
+        //cout << "Mensaje descifrado incompleto: " << mensaje_ceros << endl;
+    }
+
+    //cout << "El mensaje descifrado en numeros es: " << mensaje_ceros << endl;
+
+    ZZ i_fin_temp3 = ZZ(NumberOfDigits(alfabeto.length())); //2
+    ZZ i_fin_temp4 = ZZ(mensaje_ceros.length()) / i_fin_temp3; // 18/2 = 9 bloques
+    //cout <<" i fin temp4 " <<i_fin_temp4 << endl;
+    for (int i = 0; i < i_fin_temp4; ++i) //es 9 = mensaje_num.length() / 2
+    {
+        string s_num_matriz = SeparateIntoBlocks(i, NumberOfDigits(alfabeto.length()),mensaje_ceros); //02
+        //cout << "mensaje en indice " << s_num_matriz << endl;
+
+        int i_num_matriz = atoi(s_num_matriz.c_str());
+        string aux = ObtainMessageInLetters(i_num_matriz,alfabeto);
+        mensaje_decifrado.append(aux);
+    }
+
+    //cout << "El mensaje descifrado es: " << mensaje_decifrado << endl;
+    //cout << "fin del descifrado" << endl;
+
+    return mensaje_decifrado;
+}
